@@ -17,3 +17,6 @@ Sublime Text.lnk
 
 # Private config files.
 configs/private_config.json
+
+# Local project files.
+projects/*
