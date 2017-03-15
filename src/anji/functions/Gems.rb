@@ -1,3 +1,5 @@
+require "Os"
+
 # =============================================================================
 # Gems - This ANJI gives control over the system's Ruby Gems.
 # =============================================================================
@@ -54,7 +56,7 @@ class Gems < Anji
         # Check we have a name and try to install it.
         response = "No Gem name was given"
         if gem_name != nil && gem_name != ""
-            response = `gem install #{gem_name}`
+            response = Os.run("gem install #{gem_name}")
         end
         
         # If we need to format for HTML then we do that.
