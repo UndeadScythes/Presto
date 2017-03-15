@@ -1,0 +1,19 @@
+# External third party tools.
+support/*
+installers/*
+external/*
+
+# Log files.
+logs/*.log
+
+# Local auth tokens.
+auth_tokens.json
+
+# Local /system/ files.
+private_html/system/*
+
+# Dave's shortcut to Sublime.
+Sublime Text.lnk
+
+# Private config files.
+configs/private_config.json
