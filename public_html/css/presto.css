@@ -1,0 +1,92 @@
+/* Set body and html defaults. */
+html, body {
+	margin: 0px;
+	padding: 0px;
+}
+
+/* Set default fonts. Sans-Serif FTW! */
+html, body {
+	font-family: sans-serif;
+	font-size: 14px;
+}
+
+/* Center align some elements using text align and margins. */
+div.center {
+	text-align: center;
+	width: 100%;
+}
+div.center > * {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Try to align an element to the middle of the page using crazy positioning. */
+div.middle {
+	position: absolute;
+	width: 100%;
+	top: 50%;
+}
+div.middle > div {
+	position: absolute;
+	bottom: 50%;
+	display: inline-block;
+}
+
+/* Create a nice little form display by aligning inputs and labels. */
+div.form > label {
+	text-align: left;
+	display: block;
+	width: 200px;
+	height: 25px;
+}
+div.form > label > input {
+	float: right;
+	width: 100px;
+}
+
+/* Main content should make room for a button panel if we ever have one. */
+div.main {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	bottom: 50px;
+}
+
+/* Make a button panel appear at the bottom of the page. */
+div.button_panel {
+	position: absolute;
+	width: 100%;
+	height: 50px;
+	bottom: 0;
+}
+
+/* Make fake links behave a little more like real links. */
+.link {
+	color: blue;
+	cursor: pointer;
+}
+.link:hover {
+	text-decoration: underline;
+}
+
+/* Put default modal divs in the center of the screen. */
+div.modal_div {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(0,0,0,0.2);
+}    
+div.modal_div > div {
+    position: absolute;
+    border: 3px solid black;
+    width: 80%;
+    height: 80%;
+    margin-left: 10%;
+    margin-top: 5%; /* I don't know why this has to be 5% but if it isn't then shit gets weird! */
+    background: white;
+}
+div.modal_div > div > iframe {
+    border: 0;    
+}
