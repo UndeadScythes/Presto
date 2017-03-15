@@ -1,0 +1,39 @@
+{
+    "http_port"  : "80",
+    "https_port" : "443",
+
+    "public_html_root"  : "%PRESTO%/public_html",
+    "private_html_root" : "%PRESTO%/private_html",
+
+    "users" : [
+        {
+            "username"     : "console",
+            "password"     : "presto",
+            "landing_page" : "/console"
+        }
+    ],
+
+    "public_access" : [
+        "/css",
+        "/system",
+        "/favicon.ico"
+    ],
+
+    "alternate_config" : [
+        "%PRESTO%/configs/private_config.json",
+        "%PRESTO%/configs/editor_config.json"
+    ],
+
+    "log_file_path": "%PRESTO%/logs",
+    
+    "symlinks" : [
+        [
+            "%PRESTO%/private_html/css", "%PRESTO%/public_html/css"
+        ],
+        [
+            "%PRESTO%/private_html/js", "%PRESTO%/public_html/js"
+        ]
+    ],
+    
+    "presto_db_root_password" : "presto"
+}
