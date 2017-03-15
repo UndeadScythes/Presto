@@ -1,0 +1,1 @@
+string[/regex(with_capture_groups)/, n] -> nth capture group or nil
