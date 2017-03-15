@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hey Presto!</title>
+<ANJI Link.link_css({"file":"/css/presto.css"})>
+</head>
+<body>
+<div class="middle">
+	<div class="form center">
+		<ANJI Form.create_text_input({"id":"username","form":"login","label":"Username","focus":"true","submit_onenter":"true"})>
+		<ANJI Form.create_password_input({"id":"password","form":"login","label":"Password","submit_onenter":"true"})>
+		<ANJI Form.create_hidden_input({"id":"referer","form":"login","value":"index.html"})>
+		<ANJI Form.create_submit_button({"id":"submit","form":"login","destination":"/login","text":"Login"})><br>
+		<ANJI Html.get_query_string_arg("name":"response","fallback":"&nbsp;")>
+	</div>
+</div>
+</body>
+</html>
