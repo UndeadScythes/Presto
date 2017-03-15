@@ -1,0 +1,3 @@
+class NoUserException < Exception
+
+end

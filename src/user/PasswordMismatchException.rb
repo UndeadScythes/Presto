@@ -1,0 +1,3 @@
+class PasswordMismatchException < Exception
+
+end

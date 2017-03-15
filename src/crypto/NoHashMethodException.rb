@@ -1,0 +1,3 @@
+class NoHashMethodException < Exception
+
+end
