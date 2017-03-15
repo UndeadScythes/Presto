@@ -1,0 +1,8 @@
+Current software installers supporting this project:
+- FileZilla_3.24.1_win64-setup_bundled2.exe
+- Git-2.11.1-64-bit.exe
+- mariadb-10.1.21-winx64.msi
+- node-v6.10.0-x64.msi
+- python-3.6.0.exe
+- rubyinstaller-2.3.3.exe
+- Sublime Text Build 3126 x64 Setup.exe
