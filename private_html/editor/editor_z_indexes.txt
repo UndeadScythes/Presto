@@ -1,0 +1,4 @@
+50   - The console pane
+500  - The UI status strip
+750  - The editor control panel
+1000 - Modal divs

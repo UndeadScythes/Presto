@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Presto! File Editor</title>
+
+<ANJI Link.link_css({"file":"/css/presto.css"})/>
+
+<ANJI Link.link_css({"file":"/editor/editor.css"})/>
+    
+<!-- Link all the required CodeMirror files. -->
+<ANJI Editor.link_codemirror_files()/>
+<ANJI Editor.link_mode_js_files()/>
+
+<ANJI Link.link_css({"file":"/system/fontawesome/fontawesome.css"})/>
+
+<!-- Embed all the Presto JS files. -->
+<ANJI Presto.presto_include()/>
+    
+<ANJI Strip.embed_js({"file":"/private_html/editor/editor.js"})/>
+
+</head>
+    
+<body onload="load_editor();">
+
+<div id="control_panel">
+    <div id="control_panel_contents">
+        
+        <!-- Upper button panel. -->
+        <button onclick="open_console()" class="fa fa-dashboard"></button>
+        <ANJI User.create_logout_button({"use_fa":"true"})/>
+        <button onclick="load_codemirror()" class="fa fa-download"></button>
+        <button onclick="switch_to_db()" class="fa fa-database"></button>
+        <button onclick="switch_to_file()" class="fa fa-code"></button>
+        
+        <!-- Lower button panels. -->
+        <div id="file_buttons">
+            <button onclick="open_file_path('<ANJI Environment.get_file_path({"name":"public_html_root"})/>')" class="fa fa-home"></button>
+            <button onclick="open_file_path('<ANJI Environment.get_file_path({"name":"private_html_root"})/>')" class="fa fa-cloud"></button>
+            <button onclick="open_file_path('<ANJI Environment.get_file_path({"name":"presto_root"})/>/src/anji/functions')" class="fa fa-flask"></button>
+            <button onclick="open_file_path('<ANJI Files.get_presto_root()/>/src')" class="fa fa-cogs"></button>
+            <br>
+            <button onclick="save_file()" class="fa fa-save"></button>
+            <button onclick="new_file()" class="fa fa-file-o"></button>
+            <button onclick="delete_file()" class="fa fa-trash-o"></button>
+            <button onclick="bug_check()" class="fa fa-bug"></button>
+        </div>
+        <div id="db_buttons">
+            <button onclick="run_sql();" class="fa fa-play"></button>
+        </div>
+        
+        <div id="file_display">
+            <!-- File selection details. -->
+            <div id="current_file_name">&nbsp;</div>
+
+            <!-- Scrolling file list. -->
+            <div id="selected_directory">&nbsp;</div>
+            <div id="file_list">
+                <ANJI Editor.build_file_list()/>
+            </div>
+        </div>
+        <div id="db_display">
+        </div>
+        
+    </div>
+    
+    <div id="control_panel_handle" onclick="toggle_control_panel();"><span class="fa fa-angle-double-left"></span></div>
+</div>
+
+<div id="editor_container">
+    <textarea id="editor_textarea"></textarea>
+    <div id="console">
+        <div id="console_handle" onclick="close_console();"><span class="fa fa-angle-double-down"></span></div>
+        <div id="console_content"></div>
+    </div>
+</div>
+
+</body>
+</html>
