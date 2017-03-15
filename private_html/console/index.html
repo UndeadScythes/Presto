@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<head>
+
+<title>Presto Console</title>
+
+<ANJI Link.link_css({"path":"/css/presto.css"})>
+
+<style>
+
+/* Set up the left panel and the content pane. */
+#left_panel {
+    position: absolute;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    overflow: hidden;
+}
+#content {
+    position: absolute;
+    right: 0px;
+    left: 100px;
+    height: 100%;
+    padding: 5px;
+}
+#content > iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Make sure the page list is the right size. */
+#page_list {
+    height: 100%;
+    border: 0;
+    width: 100px;
+}
+
+</style>
+
+<ANJI Presto.presto_include()/>
+
+<script>
+
+function load_content() {
+    select_element = document.getElementById("page_list");
+    selection = select_element[select_element.selectedIndex].value;
+    ajax.load(document.getElementById("content").firstElementChild, "/console/pages/" + selection.replace(" ", "_").toLowerCase() + ".html");
+}
+    
+</script>
+
+</head>
+    
+<body>
+
+<div class="main">
+    <div id="left_panel">
+        <ANJI Files.get_directory_listing({"path":"private_html/console/pages","output":"page_list"})>
+        <ANJI Variable.replace({"name":"page_list","match":".html","replace":""})>
+        <ANJI Variable.replace({"name":"page_list","match":"_","replace":" "})>
+        <ANJI Variable.capitalise({"name":"page_list"})>
+        <ANJI Html.array_to_select({"id":"page_list","name":"page_list","size":"50","onchange":"load_content"})>
+    </div>
+
+    <div id="content">
+        <iframe></iframe>
+    </div>
+</div>
+
+<div class="button_panel">
+    <ANJI User.create_logout_button()/>
+    <button onclick="ui.close_modal_div();">Close</button>
+</div>
+
+</body>
+</html>

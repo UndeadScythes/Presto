@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head>
+
+<title>Server</title>
+
+<ANJI Link.link_css({"path":"/css/presto.css"})>
+
+<ANJI Presto.presto_include()/>
+
+<script>
+
+var timer = 0;
+
+function restart_done() {
+	document.getElementById("timer").innerText = "Restart will be complete in " + timer + " seconds";
+	if (timer-- > 0) {
+		setTimeout(restart_done, 1000);
+	} else {
+        var dead_alert = setTimeout(function() {
+            document.getElementById("timer").innerText = "Restart failed, server appears to be dead";
+        }, 1000);
+        ajax.call(presto.anji("ping", {}), function(response) {
+            clearTimeout(dead_alert);
+            document.getElementById("timer").innerText = "Restart was successful";
+        });
+		
+	}
+}
+
+function restart_server() {
+	var confirmation = confirm("Are you sure you want to restart the server?");
+	if (confirmation === true) {
+		ajax.call("/anji?cmd=restart");
+		timer = 5;
+		restart_done();
+	}
+}
+
+</script>
+
+</head>
+<body>
+
+<button onclick="restart_server();">Restart Server</button>
+<div id="timer"></div>
+
+</body>
+</html>

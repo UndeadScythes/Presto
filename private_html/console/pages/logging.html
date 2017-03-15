@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Logging</title>
+
+<ANJI Link.link_css({"path":"/css/presto.css"})/>
+
+<ANJI Presto.presto_include()/>
+
+<style>
+
+#button_bar {
+    height: 50px;
+}
+#log_list_wrapper {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 200px;
+}
+#content {
+    position: absolute;
+    top: 50px;
+    left: 200px;
+    right: 0;
+    height: 300px;
+    overflow-y: scroll;
+}
+    
+</style>
+    
+<script>
+
+function set_logging_level(logging_level) {
+    ajax.alert(presto.anji("set_logging_level", {
+        level : logging_level
+    }));
+}
+    
+function load_content() {
+    var select_element = document.getElementById("log_list");
+    var selection = select_element[select_element.selectedIndex].value;
+    ajax.load(presto.get("content"), presto.anji("get_file_content", {
+        file_path : "%PRESTO%/logs/" + selection,
+        format    : "html"
+    }));
+}
+</script>
+
+</head>
+<body>
+
+    <div id="button_bar">
+        <button onclick="set_logging_level('fatal');">Fatal</button>
+        <button onclick="set_logging_level('error');">Error</button>
+        <button onclick="set_logging_level('warning');">Warning</button>
+        <button onclick="set_logging_level('info');">Info</button>
+        <button onclick="set_logging_level('debug');">Debug</button>
+    </div>
+    
+    <div id="log_list_wrapper">
+        <ANJI Files.get_directory_listing({"path":"logs","output":"log_list"})/>
+        <ANJI Html.array_to_select({"id":"log_list","name":"log_list","size":"20","onchange":"load_content"})/>
+    </div>
+            
+    <div id="content"></div>
+    
+</body>
+</html>

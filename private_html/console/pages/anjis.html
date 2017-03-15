@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<head>
+
+<title>ANJIs</title>
+
+<ANJI Link.link_css({"path":"/css/presto.css"})>
+
+<style>
+
+/* Make the ANJI list scroll if neccessary. */
+#anji_list {
+    position: absolute;
+    overflow-y: scroll;
+    top: 20px;
+    bottom: 0;
+    width: 100%;
+}
+
+</style>
+
+<ANJI Presto.presto_include()>
+
+<script>
+
+function reload_anjis() {
+    ajax.status("/anji?cmd=reload_anjis");
+}
+
+</script>
+
+</head>
+<body>
+
+<div class="main">
+    <p>Currently loaded ANJIs:</p>
+    <div id="anji_list">
+        <ANJI Environment.get_anji_list({"output":"anji_list"})>
+        <ANJI Html.array_to_ul({"id":"anji_select","array_name":"anji_list"})>
+    </div>
+</div>
+
+<div class="button_panel">
+    <button onclick="reload_anjis();">Reload ANJIs</button>
+</div>
+
+</body>
+</html>

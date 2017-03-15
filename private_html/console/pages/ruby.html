@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Ruby Gems</title>
+
+<ANJI Link.link_css({"path":"/css/presto.css"})/>
+
+<ANJI Presto.presto_include()/>
+
+<style>
+    
+/* Hide the overflow of the output div. */
+#output {
+    overflow-y: scroll;
+    width: 100%;
+}
+
+</style>
+    
+<script>
+
+// -----------------------------------------------------------------------------
+// Resize the output element.
+// -----------------------------------------------------------------------------
+function resize_output() {
+    ui.stick(presto.get("output"));
+}
+    
+// -----------------------------------------------------------------------------
+// Display the current Gems on the page.
+// -----------------------------------------------------------------------------
+function list_gems(button) {
+    if (button !== undefined) {
+        button.disabled = true;
+    }
+    var status_id = ui.status("Refreshing Gems list");
+    ajax.load(presto.get("current_gems"), presto.anji("list_gems", {
+        format : "html"
+    }), function() {
+        ui.remove_status(status_id);
+        ui.status("Gems list refreshed", 1000);
+        resize_output();
+        if (button !== undefined) {
+            button.disabled = false;
+        }
+    });
+}
+    
+// -----------------------------------------------------------------------------
+// Update the current Gems.
+// -----------------------------------------------------------------------------
+function update_gems(button) {
+    button.disabled = true;
+    var status_id = ui.status("Updating Gems");
+    ajax.call(presto.anji("update_gems"), function(response) {
+        ui.remove_status(status_id);
+        ui.status(response);
+        list_gems(button);
+    });
+}
+
+// -----------------------------------------------------------------------------
+// Install a new Gem.
+// -----------------------------------------------------------------------------
+function install_gem(button) {
+    button.disabled = true;
+    var gem_name = prompt("Enter name of Gem:");
+    if (gem_name !== undefined && gem_name !== "") {
+        var status_id = ui.status("Installing Gem");
+        ajax.load(presto.get("output"), presto.anji("install_gem", {
+            gem_name : gem_name,
+            format   : "html"
+        }), function(response) {
+            ui.remove_status(status_id);
+            list_gems(button);
+        });
+    } else {
+        button.disabled = false;
+    }
+}
+    
+// -----------------------------------------------------------------------------
+// Uninstall a Gem.
+// -----------------------------------------------------------------------------
+function uninstall_gem(gem_name) {
+    
+    // Check that we have a Gem name.
+    if (gem_name !== undefined && gem_name !== "") {
+        var status_id = ui.status("Uninstalling Gem");
+        ajax.call(presto.anji("uninstall_gem", {
+            gem_name : gem_name
+        }), function(response) {
+            ui.remove_status(status_id);
+            ui.status(response);
+            list_gems();
+        });
+    }
+}
+    
+// -----------------------------------------------------------------------------
+// Clean up the old Gems.
+// -----------------------------------------------------------------------------
+function clean_up_gems(button) {
+    button.disabled = true;
+    var status_id = ui.status("Cleaning up old Gems");
+    ajax.call(presto.anji("clean_up_gems"), function(response) {
+        ui.remove_status(status_id);
+        ui.status(response);
+        list_gems(button);
+    });
+}
+    
+// -----------------------------------------------------------------------------
+// Get available Gem versions.
+// -----------------------------------------------------------------------------
+function get_versions(button) {
+    button.disabled = true;
+    var gem_name = prompt("Enter name of Gem:");
+    if (gem_name !== undefined && gem_name !== "") {
+        var status_id = ui.status("Fetching Gem versions");
+        ajax.load(presto.get("output"), presto.anji("get_versions", {
+            gem_name : gem_name,
+            format   : "html"
+        }), function(response) {
+            ui.remove_status(status_id);
+            list_gems(button);
+        });
+    } else {
+        button.disabled = false;
+    }
+    
+}
+</script>
+
+</head>
+    
+<body onload="resize_output();">
+    
+<p>Current Gems:</p>
+<div id="current_gems">
+    <ANJI Gems.list_gems({"format":"html"})/>
+</div>
+    
+<div id="output"></div>
+
+<div class="button_panel">
+    <button onclick="list_gems(this);">Refresh Gem List</button>
+    <button onclick="update_gems(this);">Update Gems</button>
+    <button onclick="install_gem(this);">Install Gem</button>
+    <button onclick="clean_up_gems(this);">Clean Up Gems</button>
+    <button onclick="get_versions(this);">Get Available Gem Versions</button>
+</div>
+
+</body>
+</html>

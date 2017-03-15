@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head>
+
+<title>Installer</title>
+
+<ANJI Link.link_css({"path":"/css/presto.css"})>
+
+<ANJI Presto.presto_include()/>
+
+<script>
+
+function buttons_toggle(on_off) {
+    buttons = document.getElementsByClassName("install");
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].disabled = on_off;
+    }
+}
+    
+function install(application) {
+    buttons_toggle(true);
+    ajax.call(presto.anji("install_" + application, {}), function(response) {
+        alert(response);
+        buttons_toggle(false);
+    });
+}
+</script>
+
+</head>
+<body>
+
+    <button class="install" onclick="install('codemirror');">Install Code Mirror</button>
+    <button class="install" onclick="install('fontawesome');">Install Font Awesome</button>    
+    
+</body>
+</html>

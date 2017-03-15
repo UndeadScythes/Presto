@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Logging</title>
+
+<ANJI Link.link_css({"path":"/css/presto.css"})/>
+
+<ANJI Presto.presto_include()/>
+
+<script>
+function generate_support_report() {
+    ajax.call(presto.anji("record_support"), function(response) {
+        ui.status(response);
+        ajax.load(presto.get("content"), presto.anji("get_file_content", {
+            file_path : "%PRESTO%/support.txt"
+        }));
+    });
+}
+</script>
+
+</head>
+<body>
+
+    <div id="content"><ANJI Files.get_file_content({"file_path":"%PRESTO%/support.txt"})/></div>
+    
+    <button onclick="generate_support_report();">Re-Generate Report</button>
+    
+</body>
+</html>

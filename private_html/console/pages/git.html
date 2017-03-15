@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Git</title>
+    
+<ANJI Link.link_css({"file":"/css/presto.css"})/>
+    
+<ANJI Presto.presto_include()/>
+    
+<script>
+
+var git_running = false;
+
+function create_branch() {
+    var branch_name = prompt("Enter branch name");
+    if (branch_name === undefined || branch_name === "") {
+        ui.status("You must enter a branch name");
+        return;
+    }
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("create_branch", {
+        branch_name : branch_name
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        view_branches();
+    });
+    
+}
+    
+function check_git_running() {
+    if (git_running === true) {
+        ui.status("A Git command is already running", 1000);
+        return false;
+    }
+    git_running = true;
+    return true;
+}
+    
+function show_status() {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.load(presto.get("output"), "/anji?cmd=status", function() {
+        git_running = false;
+    });
+}
+    
+function get_status(status_flags) {
+    switch (status_flags) {
+        case "!!":
+            return "Ignored";
+        case "??":
+            return "Unstaged";
+    }
+    
+    if (/M.|.M/.test(status_flags) === true) {
+        return "Modified";
+    }
+    if (/D.|.D/.test(status_flags) === true) {
+        return "Deleted";
+    }
+    if (/R.|.R/.test(status_flags) === true) {
+        return "Renamed";
+    }
+    if (/A.|.A/.test(status_flags) === true) {
+        return "Addition";
+    }
+    
+    return "Unknown status '" + status_flags.replace(/ /, "") + "'";
+}
+
+function get_staged(status_flags) {
+    var second_flag = status_flags[1];
+    switch (second_flag) {
+        case " ":
+            return "staged";
+        case "!":
+            return "ignored";
+        default:
+            return "unstaged";
+    }
+}
+    
+// -----------------------------------------------------------------------------
+// Get the saging list for the next commit.
+// -----------------------------------------------------------------------------
+function get_add_list() {
+    
+    // Check if we are already running a Git comand.
+    if (check_git_running() === false) {
+        return;
+    }
+    
+    // Make our ANJI call.
+    ajax.call("/anji?cmd=get_staging_list", function(staging_list) {
+        
+        // Turn of the Git command flag.
+        git_running = false;
+        
+        // We will build three HTML lists which we will join later on.
+        var staged_html     = [];
+        var not_staged_html = [];
+        var ignored_html    = [];
+        
+        // Loop over our staging data.
+        for (var i = 0; i < staging_list.length; i++) {
+            
+            // Get the file name and the staged and status strings.
+            var file_name = staging_list[i][1];
+            var staged    = get_staged(staging_list[i][0]);
+            var status    = get_status(staging_list[i][0]);
+            switch (staged) {
+                case "unstaged":
+                    not_staged_html.push("<li>" + status + " - " + file_name + " <span class='link' onclick='add_file(\"" + file_name + "\")'>Add</span> <span class='link' onclick='revert_file(\"" + file_name + "\")'>Revert</span> <span class='link' onclick='remove_cache(\"" + file_name + "\");'>Untrack</span></li>");
+                    break;
+                case "ignored":
+                    ignored_html.push("<li>" + status + " - " + file_name + "</li>");
+                    break;
+                case "staged":
+                    staged_html.push("<li>" + status + " - " + file_name + " <span class='link' onclick='remove_file(\"" + file_name + "\")'>Remove</span></li>");
+                    break;
+            }
+        }
+        var buttons = [
+            "<button onclick='commit_changes()'>Commit Changes</button>",
+            "<button onclick='merge_to_master()'>Merge to Master</button>"
+   
+        ];
+        presto.get("output").innerHTML = "<ul>" + staged_html.join("") + "</ul>" + buttons.join("") + "<ul>" + not_staged_html.join("") + "</ul><ul>" + ignored_html.join("") + "</ul>";
+    });
+}
+    
+function open_editor() {
+    window.open("/editor/file_editor.html", "_blank");
+}
+    
+function add_file(file_name) {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("add_file", {
+        file_name : file_name
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        get_add_list();
+    });
+}
+    
+function view_branches() {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("view_branches"), function(branches) {
+        git_running = false;
+        html = [];
+        for (var i = 0; i < branches.length; i++) {
+            if (/^\*/.test(branches[i])) {
+                html.push("<li>" + branches[i].replace(/^\* /, "") + " - Current Branch</li>");
+            } else {
+                var branch_name = branches[i].replace(/^\s+/, "");
+                var links = [
+                    "<span class='link' onclick='change_branch(\"" + branch_name + "\");'>Switch</span>",
+                    "<span class='link' onclick='merge_branch(\"" + branch_name + "\");'>Merge</span>",
+                    "<span class='link' onclick='get_diff(\"" + branch_name + "\");'>Get Diff</span>"
+                ];
+                html.push("<li>" + branch_name + " - " + links.join(" ") + "</li>");
+            }
+        }
+        presto.get("output").innerHTML = "<ul>" + html.join("") + "</ul>" + "<button onclick='create_branch();'>Create Branch</button>";
+    });
+}
+    
+function change_branch(branch_name) {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("change_branch", {
+        branch_name : branch_name
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        view_branches();
+    });
+}
+    
+function merge_branch(branch_name) {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("merge_branch", {
+        branch_name : branch_name
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        view_branches();
+    });
+}
+    
+function get_diff(branch_name) {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("get_diff", {
+        branch_name : branch_name
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        view_branches();
+    });
+}
+    
+function revert_file(file_name) {
+    if (confirm("Are you sure you want to revert all changes to this file?") === false) {
+        return;
+    }
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("revert_file", {
+        file_name : file_name
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        get_add_list();
+    });
+}
+    
+function remove_cache(file_name) {
+    if (confirm("Are you sure you want to stop tracking this file?") === false) {
+        return;
+    }
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("remove_cache", {
+        file_name : file_name
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        get_add_list();
+    });
+}
+    
+function commit_changes() {
+    var commit_message = prompt("Enter commit message");
+    if (commit_message === undefined || commit_message === "") {
+        ui.status("You must enter a commit message");
+        return;
+    }
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("commit_changes", {
+        commit_message : commit_message
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        get_add_list();
+    });
+}
+    
+function merge_to_master() {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("merge_to_master"), function(response) {
+        git_running = false;
+        ui.status(response);
+        get_add_list();
+    });
+}
+    
+function remove_file(file_name) {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("remove_file", {
+        file_name : file_name
+    }), function(response) {
+        git_running = false;
+        ui.status(response);
+        get_add_list();
+    });
+}
+    
+function push_upstream() {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("push_upstream"), function(response) {
+        git_running = false;
+        ui.status(response);
+    });
+}
+    
+function view_config() {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.load(presto.get("output"), presto.anji("view_config"), function() {
+        git_running = false;
+    });
+}
+
+function repo_init() {
+    if (check_git_running() === false) {
+        return;
+    }
+    ajax.call(presto.anji("repo_init"), function(response) {
+        git_running = false;
+        ui.status(response);
+    });
+}
+    
+    
+</script>
+
+</head>
+<body>
+
+<div class="main" style="overflow-y: scroll">
+    <pre id="output"></pre>
+</div>
+    
+<div id="mutex_buttons" class="button_panel">
+    <button onclick="show_status()">Show Full Status</button>
+    <button onclick="get_add_list()">Get Staging List</button>
+    <button onclick="view_branches()">View Branches</button>
+    <button onclick="push_upstream();">Push Upstream</button>
+    <button onclick="view_config();">View Config</button>
+    <button onclick="repo_init();">Initialise</button>
+    <button onclick="open_editor()">Open Editor</button>
+</div>
+    
+</body>
+</html>
